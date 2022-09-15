@@ -2,37 +2,41 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import Stack from "react-bootstrap/Stack";
 import logo from "./Meeting.jpg";
 import Form from "react-bootstrap/Form";
+import axios from "axios";
 
 export default class ClientForm extends React.Component {
+  //Parameters passed from Parents
   constructor(props) {
     super(props);
+    // props -- parameters, state --- Local variable 
     this.state = { value: "" };
-    // This is to handle the Text box value
-    this.handleChange = this.handleChange.bind(this);
     // This is to handle the Button Action
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  /* Event to handle the Text Box 
-     Value on Change Event
-   */
-  handleChange(event) {
-    this.setState({ value: event.target.value });
-  }
-  /* Event to handle  Clear Text Box 
-     Value on Click of Clear  Button
-   */
-  clearValue(event) {
-    event.target.value = "";
-    this.setState({ value: event.target.value });
-  }
+  }  
   /* Event to handle Submit Action
    */
   handleSubmit(event) {
-    alert("A name was submitted: " + this.state.value);
     event.preventDefault();
+    //as of now handled like this , Bcz 
+    //we dont have any login pages to collect the email, name etc
+    const data = {
+      email: "sandhya.g2131@gmail.com",
+    };
+    let username = "sandhya";
+    axios
+      .post(`http://localhost:3444/meeting`, data)
+      .then((response) => {
+        let URL =
+          response.data.join_url.replaceAll(
+            "https://us04web.zoom.us/j/",
+            "http://localhost:9996/?"
+          ) + `?role=1?name=${username}`;
+        //TODO need to cross check why link is not replacing here
+        window.location.replace(`${URL}`);
+      })
+      .catch((err) => console.error(err));
   }
 
   render() {
@@ -43,28 +47,30 @@ export default class ClientForm extends React.Component {
         <Card.Body>
           <Form>
             <Form.Group className="mb-3" controlId="formBasicText">
-              <Form.Label>Meeting ID or Personal Link Name</Form.Label>
+              <Form.Label>Meeting Link</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter Meeting ID or Personal Link Name"
-              />
-              <Form.Text
-                className="text-muted"
                 value={this.state.value}
-                onChange={this.handleChange}
-              >
+                onChange={(event) => this.setState({ value: event.target.value })}
+                autocomplete="off"
+                placeholder="Enter Meeting Link"
+              />
+              <Form.Text className="text-muted">
                 By clicking "Join", you agree to our Terms of Services and
-                Privacy Statement{" "}
+                Privacy Statement
               </Form.Text>
             </Form.Group>
             <Form.Group>
-              <Button onClick={this.clearValue} variant="secondary">
+              <Button
+                onClick={() => this.setState({ value: '' })}
+                variant="secondary"
+              >
                 Clear
               </Button>
               &nbsp;
               <Button
                 style={{ paddingLeft: "16px", paddingRight: "16px" }}
-                onClick={this.handleSubmit}
+                onClick={(evt) => this.handleSubmit(evt)}
                 variant="primary"
               >
                 Join
