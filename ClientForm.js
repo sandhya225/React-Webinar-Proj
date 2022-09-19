@@ -10,21 +10,26 @@ export default class ClientForm extends React.Component {
   //Parameters passed from Parents
   constructor(props) {
     super(props);
-    // props -- parameters, state --- Local variable 
-    this.state = { value: "" };
+    // props -- parameters, state --- Local variable
+    this.state = {};
+    this.email = { value: "email@gmail.com" };
     // This is to handle the Button Action
     this.handleSubmit = this.handleSubmit.bind(this);
-  }  
+    this.clearFields = this.clearFields.bind(this);
+  }
+  clearFields() {
+    this.setState({ link: "", email: "" });
+  }
   /* Event to handle Submit Action
    */
   handleSubmit(event) {
     event.preventDefault();
-    //as of now handled like this , Bcz 
+    //as of now handled like this , Bcz
     //we dont have any login pages to collect the email, name etc
     const data = {
-      email: "sandhya.g2131@gmail.com",
+      email: this.email.value,
     };
-    let username = "sandhya";
+    let username = "username";
     axios
       .post(`http://localhost:3444/meeting`, data)
       .then((response) => {
@@ -47,22 +52,39 @@ export default class ClientForm extends React.Component {
         <Card.Body>
           <Form>
             <Form.Group className="mb-3" controlId="formBasicText">
-              <Form.Label>Meeting Link</Form.Label>
+              <Form.Label style={{ float: "left" }}>Meeting Link</Form.Label>
               <Form.Control
                 type="text"
-                value={this.state.value}
-                onChange={(event) => this.setState({ value: event.target.value })}
+                value={this.state.link}
+                onChange={(event) =>
+                  this.setState({ link: event.target.value })
+                }
                 autocomplete="off"
                 placeholder="Enter Meeting Link"
               />
-              <Form.Text className="text-muted">
+              <Form.Text style={{ float: "left" }} className="text-muted">
                 By clicking "Join", you agree to our Terms of Services and
                 Privacy Statement
               </Form.Text>
             </Form.Group>
+            <br />
+            <Form.Group className="mb-3" controlId="formBasicText">
+              <Form.Label style={{ float: "left" }}>
+                Email (Optional)
+              </Form.Label>
+              <Form.Control
+                type="text"
+                value={this.state.email}
+                onChange={(event) =>
+                  this.setEmail({ email: event.target.value })
+                }
+                autocomplete="off"
+                placeholder="Enter Email ID"
+              />
+            </Form.Group>
             <Form.Group>
               <Button
-                onClick={() => this.setState({ value: '' })}
+                onClick={(evnt) => this.clearFields(evnt)}
                 variant="secondary"
               >
                 Clear
